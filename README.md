@@ -1,0 +1,3 @@
+Simple python IRC bot using Twisted.
+
+Much works needs to be done...
