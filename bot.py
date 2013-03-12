@@ -38,7 +38,6 @@ def checkMessage(user, msg):
 
 
 class IRCBot(irc.IRCClient):
-    nickname = "samantus"
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
@@ -47,6 +46,9 @@ class IRCBot(irc.IRCClient):
         print 'Connection established.'
         self.join(self.factory.channel)
         print 'Joined channel', self.factory.channel
+    
+    def warnUser(self, user, warning):
+        self.msg(user, "May I remind you, " + user + ", that " + warning + " is not appreciated.")
 
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
@@ -54,8 +56,8 @@ class IRCBot(irc.IRCClient):
             self.runCommand(msg[1:])
         result = checkMessage(user, msg)
         if result[0] == False:
-            self.msg(user, "May I remind you, " + user + ", that " + result[1] + " is not appreciated.")
-    
+            self.warnUser(user, result[1])
+
     def runCommand(self, msg):
         if msg.lower() == "welcome":
             self.msg(self.factory.channel, doCaps("Welcome to IRCX, a place of joy. I hope you will enjoy your stay. We only have 2 rules: 1. Praise sam 2. Do anything this bot tells you", msg))
@@ -64,7 +66,9 @@ class IRCBot(irc.IRCClient):
 class IRCFactory(protocol.ClientFactory):
     protocol = IRCBot
     channel = ""
-    def __init__(self, channel):
+
+    def __init__(self, nick, channel):
+        self.protocol.nickname = nick
         self.channel = channel
 
     def clientConnectionFailed(self, connector, reason):
@@ -77,6 +81,6 @@ class IRCFactory(protocol.ClientFactory):
 
 
 host, port = "i.r.cx", 6667
-fact = IRCFactory("#brows")
+fact = IRCFactory("samantus", "#brows")
 reactor.connectTCP(host, port, fact)
 reactor.run()
