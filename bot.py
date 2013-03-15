@@ -10,7 +10,7 @@ def isEmote(msg):
 
 def isFutile(msg):
     """Checks whether msg is a futile message, that is a message without much purpose (typically considered spam)."""
-    futiles = ["wat", "wut", "ftw", "omg", "omfg", "zomg", "zomfg", "uh", "lmao"]
+    futiles = ["wat", "wut", "ftw", "omg", "omfg", "zomg", "zomfg", "uh"]
     return msg.lower() in futiles
 
 
@@ -42,6 +42,7 @@ class IRCBot(irc.IRCClient):
         self.msg("chanserv", "kick " + self.factory.channel + " " + user
                  + " User received at least " + str(self._threshold)
                  + " warning(s).")
+        del self._users[user]
 
     def warnUser(self, user, warning): 
         if not (user in self._users):
@@ -97,6 +98,6 @@ class IRCFactory(protocol.ClientFactory):
 
 
 host, port = "i.r.cx", 6667
-fact = IRCFactory("samantus", "pass" "#brows")
+fact = IRCFactory("samantus", "pass", "#brows")
 reactor.connectTCP(host, port, fact)
 reactor.run()
