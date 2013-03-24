@@ -1,11 +1,11 @@
 from twisted.internet import reactor, protocol
 from twisted.words.protocols import irc
 from twisted.python import log
-import Utils
+import Utils, Command
 
 def isEmote(msg):
     """Checks whether msg is a single emote."""
-    emotes = [":)", ":(", ";)", ":p", ":d", ":o", ":]", ":[", ":l", ":3", "<3", "^_^"]
+    emotes = [":)", ":(", ";)", ":p", ":d", ":o", ":]", ":[", ":l", ":3", "<3", "^_^", ":|", "xd", "xp"]
     return msg.lower() in emotes
 
 def isFutile(msg):
@@ -62,18 +62,19 @@ class IRCBot(irc.IRCClient):
             self.warnUser(user, result[1])
 
     def runCommand(self, user, msg):
-        cmd = msg.lower()
-        if cmd == "welcome":
-            self.msg(self.factory.channel, Utils.doCaps(
-                "Welcome to IRCX, a place of joy. I hope you will enjoy"
-                " your stay. We only have 2 rules: 1. Praise sam 2. Do"
-                " anything this bot tells you", msg
-            ))
-        elif cmd == "help":
-            self.msg(self.factory.channel, Utils.doCaps(
-                "`help, `welcome", msg
-            ))
- 
+        try:
+            tokens = []
+            parser = Command.getEbnfParser(tokens)
+            parser.parseString(msg, True)
+            print tokens
+            for s in Command.interpret(tokens):
+                if s != None:
+                    self.msg(self.factory.channel, s)
+        except:
+            self.msg(self.factory.channel, ("Oops, seems like something "
+                    "went wrong..."))
+            raise           
+
     def userRenamed(self, oldname, newname):
         if oldname in self._users:
             self._users[newname] = self._users[oldname]
@@ -98,6 +99,6 @@ class IRCFactory(protocol.ClientFactory):
 
 
 host, port = "i.r.cx", 6667
-fact = IRCFactory("samantus", "pass", "#brows")
+fact = IRCFactory("samantus", "samantusbot4all", "#gh")
 reactor.connectTCP(host, port, fact)
 reactor.run()
