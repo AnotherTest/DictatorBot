@@ -1,3 +1,5 @@
+import urllib2
+
 def doCaps(str1, str2): # pretty ugly, please cleanup
     """Makes str1 be capitalized exactly like str2."""
     i = 0
@@ -20,3 +22,7 @@ def find(value, l):
     except:
         return None
 
+def httpGet(url):
+    with urllib2.urlopen(url) as response:
+        return response.read()
+        

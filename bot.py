@@ -99,6 +99,6 @@ class IRCFactory(protocol.ClientFactory):
 
 
 host, port = "i.r.cx", 6667
-fact = IRCFactory("samantus", "samantusbot4all", "#gh")
+fact = IRCFactory("", "", "#brows")
 reactor.connectTCP(host, port, fact)
 reactor.run()

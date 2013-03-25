@@ -1,8 +1,8 @@
 from pyparsing import quotedString, Word, alphas, alphanums, Suppress,\
     Optional, Forward, OneOrMore, ZeroOrMore, nums, ParseFatalException,\
     Token
-import inspect, types, pickle, exceptions
-from Utils import enum, find
+import re, inspect, types, pickle, exceptions
+from Utils import enum, find, httpGet
 
 TokenType = enum("StrLit", "NumLit", "Var", "Call", "Def", "End")
 
@@ -41,10 +41,12 @@ function_table = {
     "id"     : lambda x: x,
     "uc"     : lambda x: x.upper(),
     "lc"     : lambda x: x.lower(),
-    "ad"     : lambda x, y: x + y,
-    "ml"     : lambda x, y: x * y,
-    "dv"     : lambda x, y: x / y,
-    "nl"     : lambda x: return None
+    "add"    : lambda x, y: x + y,
+    "mul"    : lambda x, y: x * y,
+    "div"    : lambda x, y: x / y,
+    "nil"    : lambda x: None,
+    "grep"   : lambda ex, s: re.search(ex, s).group(),
+    "get"    : httpGet
 }
 
 user_function_table = {}
