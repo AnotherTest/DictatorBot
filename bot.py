@@ -29,6 +29,10 @@ def checkMessage(user, msg):
 class IRCBot(irc.IRCClient):
     _users = dict() # maps names to warning levels
     _threshold = 3
+    _interpreter = None
+
+    def __init__(self):
+        self._interpreter = Command.Interpreter("functions.p")
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
@@ -67,7 +71,7 @@ class IRCBot(irc.IRCClient):
             parser = Command.getEbnfParser(tokens)
             parser.parseString(msg, True)
             print tokens
-            for s in Command.interpret(tokens):
+            for s in self._interpreter.interpret(tokens):
                 if s != None:
                     self.msg(self.factory.channel, s)
         except:
@@ -99,6 +103,6 @@ class IRCFactory(protocol.ClientFactory):
 
 
 host, port = "i.r.cx", 6667
-fact = IRCFactory("", "", "#brows")
+fact = IRCFactory("samantus", "", "")
 reactor.connectTCP(host, port, fact)
 reactor.run()

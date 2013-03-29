@@ -3,6 +3,7 @@ from pyparsing import quotedString, Word, alphas, alphanums, Suppress,\
     Token
 import re, inspect, types, pickle, exceptions
 from Utils import enum, find, httpGet
+import os.path
 
 TokenType = enum("StrLit", "NumLit", "Var", "Call", "Def", "End")
 
@@ -37,109 +38,113 @@ def getEbnfParser(symbols):
     msg = OneOrMore(cmd)
     return msg
 
-function_table = {
-    "id"     : lambda x: x,
-    "uc"     : lambda x: x.upper(),
-    "lc"     : lambda x: x.lower(),
-    "add"    : lambda x, y: x + y,
-    "mul"    : lambda x, y: x * y,
-    "div"    : lambda x, y: x / y,
-    "nil"    : lambda x: None,
-    "grep"   : lambda ex, s: re.search(ex, s).group(),
-    "get"    : httpGet
-}
-
-user_function_table = {}
-
 def isLiteral(tk):
     t = tk[1]
     return t == TokenType.StrLit or t == TokenType.NumLit
 
-def fnGetArgc(name):
-    global function_table, user_function_table
-    if name in function_table:
-        return len(inspect.getargspec(function_table[name]).args)
-    return len(user_function_table[name][0])
 
-def getArgTuple(arg):
-    if type(arg) == types.StringType:
-        return (arg, TokenType.StrLit)
-    else:
-        return (arg, TokenType.IntLit)
+class Interpreter:
+    function_table = {
+        "id"     : lambda x: x,
+        "uc"     : lambda x: x.upper(),
+        "lc"     : lambda x: x.lower(),
+        "add"    : lambda x, y: x + y,
+        "mul"    : lambda x, y: x * y,
+        "div"    : lambda x, y: x / y,
+        "pow"    : lambda x, y: x ** y,
+        "nil"    : lambda x: None,
+        "grep"   : lambda ex, s: re.search(ex, s).group(),
+        "grepi"  : lambda ex, s, i: re.search(ex, s).groups()[i],
+        "get"    : lambda url: httpGet(url)
+    }
+    user_function_table = {}
+    _tokens = [] # Current list of tokens
+    _filename = ""
 
-def fnCall(name, args, tokens):
-    global function_table, user_function_table
-    print "%s called, is user function?" % name, name in user_function_table
-    if name in user_function_table: print user_function_table[name] 
-    if name in function_table:
-        return function_table[name](*args)
-    # user defined function: insert code to execute in tokens
-    fn = user_function_table[name]
-    # reverse code because we must insert in correct order
-    print "Before: ", tokens
-    for x in fn[1]:
-        if x[1] == TokenType.Var:
-            index = find(x[0], fn[0])
-            if index == None:
-                # TODO: ERROR
-                pass
-            tokens.insert(0, getArgTuple(args[index]))
+    def __init__(self, filename):
+        """
+        Constructor, just creates a functions file if it doesn't exist.
+        """
+        self._filename = filename
+        if not os.path.isfile(filename):
+            self.saveUserFunctions()
+
+    def fnGetArgc(self, name):
+        """Gets the amount of arguments a function given by its name takes."""
+        if name in self.function_table:
+            return len(inspect.getargspec(self.function_table[name]).args)
         else:
-            tokens.insert(0, x)
-    print "After: ", tokens
-    return interpretStatement(tokens) 
+            return len(self.user_function_table[name][0])
 
-def fnDef(name, tokens):
-    global user_function_table
-    args = []
-    while tokens[0][1] == TokenType.Var:
-        args.append(tokens.pop(0)[0])
-    code = []
-    while tokens[0][1] != TokenType.End:
-        code.append(tokens.pop(0))
-    code.reverse()
-    user_function_table[name] = (args, code)
-
-def interpretStatement(tokens):
-    global function_table
-    head = tokens.pop(0)
-    if isLiteral(head):
-        return head[0]
-    if head[1] == TokenType.Def:
-        return fnDef(head[0], tokens)
-    argc = fnGetArgc(head[0])
-    args = [None] * argc
-    for j in range(argc):
-        args[j] = interpretStatement(tokens)
-    return fnCall(head[0], args, tokens)
-
-def saveUserFunctions():
-    global user_function_table
-    pickle.dump(user_function_table, open("functions.p", "wb"))
-
-def loadUserFunctions():
-    global user_function_table
-    try:
-        with open("functions.p", "rb") as f:
-            user_function_table = pickle.load(f)
-    except exceptions.IOError as e:
-        if e.errno == 2:
-             saveUserFunctions()
+    def getArgTuple(self, arg):
+        """Gets the tuple (value, TokenType) associated with a given argument."""
+        if type(arg) == types.StringType:
+            return (arg, TokenType.StrLit)
         else:
-            raise
+            return (arg, TokenType.IntLit)
 
-def interpret(tokens):
-    loadUserFunctions()
-    last, end_token = 0, (";", TokenType.End)
-    find_end = lambda: find(end_token, tokens[last:]) + last + 1
-    output = []
-    amount = tokens.count(end_token)
-    for i in range(amount):
-        new = find_end()
-        try:
-            output.append(interpretStatement(tokens[last:new]))
-        except:
-            output.append("Oops, seems like something went wrong.")
-        last, new = new, find_end()
-    saveUserFunctions()
-    return output
+    def fnCall(self, name, args):
+        """Calls a function given its name and arguments."""
+        if name in self.function_table:
+            return self.function_table[name](*args)
+        # user defined function: insert code to execute in tokens
+        fn = self.user_function_table[name]
+        for x in fn[1]:
+            if x[1] == TokenType.Var:
+                index = find(x[0], fn[0])
+                if index == None:
+                    # TODO: ERROR
+                    pass
+                self._tokens.insert(0, self.getArgTuple(args[index]))
+            else:
+                self._tokens.insert(0, x)
+        return self.interpretStatement() 
+
+    def fnDef(self, name):
+        """Handles function definition."""
+        args = []
+        while self._tokens[0][1] == TokenType.Var:
+            args.append(self._tokens.pop(0)[0])
+        code = []
+        while self._tokens[0][1] != TokenType.End:
+            code.append(self._tokens.pop(0))
+        code.reverse()
+        self.user_function_table[name] = (args, code)
+
+    def interpretStatement(self):
+        head = self._tokens.pop(0)
+        if isLiteral(head):
+            return head[0]
+        if head[1] == TokenType.Def:
+            return self.fnDef(head[0])
+        argc = self.fnGetArgc(head[0])
+        args = [None] * argc
+        for j in range(argc):
+            args[j] = self.interpretStatement()
+        return self.fnCall(head[0], args)
+
+    def saveUserFunctions(self):
+        with open(self._filename, "wb") as f:
+            pickle.dump(self.user_function_table, f)
+
+    def loadUserFunctions(self):
+        with open(self._filename, "rb") as f:
+            self.user_function_table = pickle.load(f)
+
+    def interpret(self, tokens):
+        self.loadUserFunctions()
+        last, end_token = 0, (";", TokenType.End)
+        find_end = lambda: find(end_token, tokens[last:]) + last + 1
+        output = []
+        amount = tokens.count(end_token)
+        for i in range(amount):
+            new = find_end()
+            try:
+                self._tokens = tokens[last:new]
+                output.append(self.interpretStatement())
+            except:
+                output.append("Oops, seems like something went wrong.")
+                raise
+            last, new = new, find_end()
+        self.saveUserFunctions()
+        return output

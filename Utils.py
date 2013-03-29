@@ -23,6 +23,4 @@ def find(value, l):
         return None
 
 def httpGet(url):
-    with urllib2.urlopen(url) as response:
-        return response.read()
-        
+    return urllib2.urlopen(url).read()
