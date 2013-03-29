@@ -25,12 +25,30 @@ def checkMessage(user, msg):
         return (False, "use of noobish interjects")
     return (True, "")
 
+def getLast3Messages(user, logs):
+    logs2 = logs
+    logs2.reverse()
+    result = []
+    for pair in logs2:
+        if pair[0] == user:
+            result.append(pair)
+        if len(result) == 3:
+            break
+
+    return result
+
+def detectSpam(user, logs):
+    msg = getLast3Messages(user, logs)
+    if len(msg) < 3:
+        return False
+    return len([x for x in msg if x[1] == x[1].upper()]) == len(msg)
 
 class IRCBot(irc.IRCClient):
     _users = dict() # maps names to warning levels
     _threshold = 3
     _interpreter = None
-
+    _logs = [] # stores previous messages
+    
     def __init__(self):
         self._interpreter = Command.Interpreter("functions.p")
 
@@ -42,28 +60,32 @@ class IRCBot(irc.IRCClient):
         self.join(self.factory.channel)
         print 'Joined channel', self.factory.channel
     
-    def kickUser(self, user):
+    def kickUser(self, user, reason):
         self.msg("chanserv", "kick " + self.factory.channel + " " + user
-                 + " User received at least " + str(self._threshold)
-                 + " warning(s).")
-        del self._users[user]
+                 + " " + reason)
+        if user in self._users:
+            del self._users[user]
 
-    def warnUser(self, user, warning): 
+    def warnUser(self, user, warning):
         if not (user in self._users):
             self._users[user] = 0
         self._users[user] += 1
         self.msg(user, "May I remind you, " + user + ", that " + warning 
                  + " is not appreciated.")
         if self._users[user] >= self._threshold:
-            self.kickUser(user)
+            self.kickUser(user, "User received at least " + str(self._threshold)
+                          + " warning(s).")
     
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
+        self._logs.append((user, msg))
         if msg[0] == "`":
             self.runCommand(user, msg[1:])
         result = checkMessage(user, msg)
         if result[0] == False:
             self.warnUser(user, result[1])
+        if detectSpam(user, self._logs):
+            self.kickUser(user, "Quit spamming.")
 
     def runCommand(self, user, msg):
         try:
@@ -102,7 +124,7 @@ class IRCFactory(protocol.ClientFactory):
         connector.connect()
 
 
-host, port = "i.r.cx", 6667
-fact = IRCFactory("samantus", "", "")
+host, port = "localhost", 6667
+fact = IRCFactory("samantus", "", "#")
 reactor.connectTCP(host, port, fact)
 reactor.run()

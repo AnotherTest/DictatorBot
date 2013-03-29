@@ -81,7 +81,7 @@ class Interpreter:
         if type(arg) == types.StringType:
             return (arg, TokenType.StrLit)
         else:
-            return (arg, TokenType.IntLit)
+            return (arg, TokenType.NumLit)
 
     def fnCall(self, name, args):
         """Calls a function given its name and arguments."""
