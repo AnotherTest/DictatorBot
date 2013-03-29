@@ -1,11 +1,11 @@
 from twisted.internet import reactor, protocol
 from twisted.words.protocols import irc
 from twisted.python import log
-import Utils, Command
+import Utils, Command, time
 
 def isEmote(msg):
     """Checks whether msg is a single emote."""
-    emotes = [":)", ":(", ";)", ":p", ":d", ":o", ":]", ":[", ":l", ":3", "<3", "^_^", ":|", "xd", "xp"]
+    emotes = [":)", ":(", ";)", ":p", ":d", ":o", ":]", ":[", ":l", ":3", "<3", "^_^", ":|", "xd", "xp", "o.o"]
     return msg.lower() in emotes
 
 def isFutile(msg):
@@ -29,25 +29,27 @@ def getLast3Messages(user, logs):
     logs2 = logs
     logs2.reverse()
     result = []
-    for pair in logs2:
-        if pair[0] == user:
-            result.append(pair)
+    for data in logs2:
+        if data[1] == user:
+            result.append(data)
         if len(result) == 3:
             break
-
+    result.reverse()
     return result
 
 def detectSpam(user, logs):
     msg = getLast3Messages(user, logs)
     if len(msg) < 3:
         return False
-    return len([x for x in msg if x[1] == x[1].upper()]) == len(msg)
+    if (msg[0][2] == msg[1][2] == msg[2][2]) or (msg[2][0] - msg[0][0] < 3):
+        return True
+    return len([x for x in msg if x[2] == x[2].upper()]) == len(msg)
 
 class IRCBot(irc.IRCClient):
     _users = dict() # maps names to warning levels
     _threshold = 3
     _interpreter = None
-    _logs = [] # stores previous messages
+    _logs = [] # stores previous messages as (time, user, msg)
     
     def __init__(self):
         self._interpreter = Command.Interpreter("functions.p")
@@ -61,8 +63,9 @@ class IRCBot(irc.IRCClient):
         print 'Joined channel', self.factory.channel
     
     def kickUser(self, user, reason):
-        self.msg("chanserv", "kick " + self.factory.channel + " " + user
-                 + " " + reason)
+        #self.msg("chanserv", "kick " + self.factory.channel + " " + user
+        #         + " " + reason)
+        self.kick(self.factory.channel, user, reason)
         if user in self._users:
             del self._users[user]
 
@@ -78,7 +81,7 @@ class IRCBot(irc.IRCClient):
     
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
-        self._logs.append((user, msg))
+        self._logs.append((time.time(), user, msg))
         if msg[0] == "`":
             self.runCommand(user, msg[1:])
         result = checkMessage(user, msg)
@@ -125,6 +128,6 @@ class IRCFactory(protocol.ClientFactory):
 
 
 host, port = "localhost", 6667
-fact = IRCFactory("samantus", "", "#")
+fact = IRCFactory("samantus", "", "#brows")
 reactor.connectTCP(host, port, fact)
 reactor.run()
