@@ -82,6 +82,9 @@ class IRCBot(irc.IRCClient):
     def logMessage(self, user, msg):
         self._logs.append((time.time(), user, msg))
 
+    def sortLog(self):
+        self._logs.sort(lambda m1, m2: Utils.compare(m1[0], m2[0]))
+
     def _writeLogMessages(self):
         lines = ["[" + time.ctime(m[0]) + "] <" + m[1]
                  + "> " + m[2] + "\n" for m in self._logs]
