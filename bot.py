@@ -88,7 +88,6 @@ class IRCBot(irc.IRCClient):
     def _writeLogMessages(self):
         lines = ["[" + time.ctime(m[0]) + "] <" + m[1]
                  + "> " + m[2] + "\n" for m in self._logs]
-        lines.reverse()
         logfile = self.factory.channel[1:] + ".log"
         with open(logfile, "a+") as f:
             f.writelines(lines)

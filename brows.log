@@ -1,0 +1,196 @@
+[Sat Mar 30 16:31:56 2013] <nickserv> You are now identified for samantus.
+[Sat Mar 30 16:31:56 2013] <nickserv> This nickname is registered. Please choose a different nickname, or identify via /msg nickserv identify <password>.
+[Sat Mar 30 16:31:56 2013] <SERVER> samantus has set mode to i with args (None,) in samantus.
+[Sat Mar 30 16:31:56 2013] <zz.int> *** Notice -- motd was last changed at 
+[Sat Mar 30 16:31:56 2013] <zz.int> *** Couldn't look up your hostname
+[Sat Mar 30 16:31:56 2013] <zz.int> *** Checking Ident
+[Sat Mar 30 16:31:56 2013] <zz.int> *** Looking up your hostname...
+[Sat Mar 30 16:31:56 2013] <zz.int> *** No Ident response
+[Sat Mar 30 16:31:56 2013] <zz.int> *** Spoofing your IP
+[Sat Mar 30 16:31:56 2013] <zz.int> *** Notice -- Please read the motd if you haven't read it
+[Sat Mar 30 16:31:56 2013] <nickserv> You have 35 seconds to identify to your nickname before it is changed.
+[Sat Mar 30 16:31:58 2013] <SERVER> zz.int has changed the topic of #brows to: You'll never forget my name
+[Sat Mar 30 16:31:58 2013] <SERVER> chanserv!chanserv@services.int has set mode to o with args ('samantus',) in #brows.
+[Sat Mar 30 16:32:35 2013] <eric> ello
+[Sat Mar 30 16:32:58 2013] <james> Tamagotchi The Movie
+[Sat Mar 30 16:32:56 2013] <james> Holy crap
+[Sat Mar 30 16:32:59 2013] <james> OMG
+[Sat Mar 30 16:34:34 2013] <SERVER> jack joined #brows.
+[Sat Mar 30 16:34:34 2013] <SERVER> chanserv!chanserv@services.int has set mode to v with args ('jack',) in #brows.
+[Sat Mar 30 16:34:37 2013] <ben> hi jack
+[Sat Mar 30 16:36:44 2013] <james> Wow.
+[Sat Mar 30 16:36:34 2013] <SERVER> Aimeeyyy joined #brows.
+[Sat Mar 30 16:36:05 2013] <james> Omg
+[Sat Mar 30 16:36:04 2013] <james> :O
+[Sat Mar 30 16:36:04 2013] <james> https://www.youtube.com/watch?v=rFs9mKEU6Xw
+[Sat Mar 30 16:36:05 2013] <Kyso> Tamagotchi Movie english PART 1 (WITH TRAILER)  <https://www.youtube.com/watch?v=rFs9mKEU6Xw>
+[Sat Mar 30 16:36:18 2013] <sam> http://arstechnica.com/civis/viewtopic.php?f=23&t=1199529
+[Sat Mar 30 16:36:51 2013] <james> 22 years, wow.
+[Sat Mar 30 16:37:29 2013] <james> 16 years is forever.
+[Sat Mar 30 16:37:24 2013] <sam> i have a question
+[Sat Mar 30 16:37:22 2013] <james> Typo woops
+[Sat Mar 30 16:37:17 2013] <james> 16*
+[Sat Mar 30 16:37:09 2013] <sam> got the name wrong
+[Sat Mar 30 16:36:59 2013] <arthur> Hi aineeyyy
+[Sat Mar 30 16:37:05 2013] <arthur> Aimeeyyy
+[Sat Mar 30 16:37:13 2013] <Aimeeyyy> Hiya!
+[Sat Mar 30 16:37:19 2013] <arthur> Hey
+[Sat Mar 30 16:37:22 2013] <sam> also
+[Sat Mar 30 16:37:25 2013] <james> But still.
+[Sat Mar 30 16:37:37 2013] <arthur> For who sam
+[Sat Mar 30 16:38:09 2013] <sam> arthur, james: Do I get a server which I could keep running for ~2 years or so but not great specs? Do I hoarde the money?  Or do I buy a powerful server? Or do I buy a server from an ISP with a good ToS and run a Tor exit or something?
+[Sat Mar 30 16:38:34 2013] <james> It depends on what the specs are.
+[Sat Mar 30 16:39:28 2013] <reece> Doctor Who can no longer be a kids show, after making last seasons cast jump off a fucking tower block to their deaths
+[Sat Mar 30 16:39:28 2013] <reece> james I am not looking forward to doctor who
+[Sat Mar 30 16:39:22 2013] <james> Yeah, that's true.
+[Sat Mar 30 16:39:18 2013] <james> I doubt you'd need that much space for that anyway.
+[Sat Mar 30 16:39:04 2013] <sam> Y'know, nothing big at all.
+[Sat Mar 30 16:38:55 2013] <arthur> The latter sounds good
+[Sat Mar 30 16:38:57 2013] <sam> Let's assume they're comfortable enough for IRC/znc/maybe nginx but around 10-15GB HDD
+[Sat Mar 30 16:39:15 2013] <sam> the Tor exit with the good ISP would be expensive though
+[Sat Mar 30 16:39:20 2013] <sam> and still risky..
+[Sat Mar 30 16:39:26 2013] <arthur> No need for a powerful server then
+[Sat Mar 30 16:39:28 2013] <reece> it seems like its gunna be shit
+[Sat Mar 30 16:39:36 2013] <sam> BUT I would have a few hops away from me even if I ran the exit
+[Sat Mar 30 16:40:40 2013] <Aimeeyyy> How are you all?
+[Sat Mar 30 16:40:26 2013] <arthur> Gmm
+[Sat Mar 30 16:40:24 2013] <Test> sam: just make some money?
+[Sat Mar 30 16:40:21 2013] <james> Reece die.
+[Sat Mar 30 16:40:17 2013] <reece> GAAAY
+[Sat Mar 30 16:40:16 2013] <arthur> The last one sounds good sam
+[Sat Mar 30 16:40:14 2013] <sam> selfishly: I want to get a tiny server and keep it for a while - but i don't know what i'd even do with it
+[Sat Mar 30 16:39:58 2013] <sam> ethically: I wish to run the Tor exit
+[Sat Mar 30 16:40:12 2013] <reece> well this is gay
+[Sat Mar 30 16:40:16 2013] <reece> tonights DW is 45 mins
+[Sat Mar 30 16:40:16 2013] <james> https://sslimgs.xkcd.com/comics/spirit.png
+[Sat Mar 30 16:40:18 2013] <james> WHY NOT REECE
+[Sat Mar 30 16:40:21 2013] <james> Die.
+[Sat Mar 30 16:40:24 2013] <reece> what?
+[Sat Mar 30 16:40:31 2013] <sam> test: not my money so
+[Sat Mar 30 16:40:49 2013] <james> Great, you?
+[Sat Mar 30 16:41:44 2013] <sam> arthur: I'll probably run Tor on any, but only an exit on the latter. For the record, the latter would be expensive just as powerful would be. Powerful would just be expensive and good for something I don't know as I don't run lots of gaming shit or whatever.
+[Sat Mar 30 16:41:06 2013] <sam> yeah i know that's what i'm referring to
+[Sat Mar 30 16:41:04 2013] <Josh> he was gonna buy ircx a server for a year
+[Sat Mar 30 16:40:58 2013] <Josh> bryan sheep fucker bane was asking for you
+[Sat Mar 30 16:41:05 2013] <Aimeeyyy> I am doing just great, thankyou! : )
+[Sat Mar 30 16:41:09 2013] <arthur> Are you *only* going to run tor if you get the last one?
+[Sat Mar 30 16:41:49 2013] <SERVER> SS has quit (Ping timeout: 265 seconds).
+[Sat Mar 30 16:41:50 2013] <sam> josh: thx though
+[Sat Mar 30 16:42:22 2013] <SERVER> chanserv!chanserv@services.int has set mode to v with args ('SS',) in #brows.
+[Sat Mar 30 16:42:22 2013] <SERVER> SS joined #brows.
+[Sat Mar 30 16:42:17 2013] <Josh> also what is bad about doctor who not being a kids show..
+[Sat Mar 30 16:43:51 2013] <ben> i saw my life flash before my eyes Test
+[Sat Mar 30 16:43:37 2013] <ben> sam dat bot
+[Sat Mar 30 16:43:36 2013] <james> Josh: Tennant is back for the 50th episode, it was announced.
+[Sat Mar 30 16:43:26 2013] <ben> NOO I GOT WARNED
+[Sat Mar 30 16:43:20 2013] <sam> :)
+[Sat Mar 30 16:43:18 2013] <ben> sam working on it
+[Sat Mar 30 16:43:09 2013] <sam> NANANA
+[Sat Mar 30 16:42:56 2013] <chanserv> ben added James to the VOP list.
+[Sat Mar 30 16:42:56 2013] <SERVER> chanserv!chanserv@services.int has set mode to vv with args ('_', 'james') in #brows.
+[Sat Mar 30 16:43:05 2013] <james> Exactly, Doctor Who is awesome.
+[Sat Mar 30 16:43:11 2013] <sam> ben: status on fans
+[Sat Mar 30 16:43:18 2013] <ben> :)
+[Sat Mar 30 16:43:24 2013] <arthur> sam first and second ssound best
+[Sat Mar 30 16:43:36 2013] <ben> fff
+[Sat Mar 30 16:43:36 2013] <Test> ben: kicking is off
+[Sat Mar 30 16:43:41 2013] <ben> oh lol
+[Sat Mar 30 16:43:54 2013] <ben> you dont even know
+[Sat Mar 30 16:44:51 2013] <james> I saw it coming ages ago.
+[Sat Mar 30 16:44:30 2013] <sam> bane forecast this
+[Sat Mar 30 16:44:21 2013] <Josh> the doctor turns back to tennant for one episode?
+[Sat Mar 30 16:44:09 2013] <Josh> and how is that even gonna work??
+[Sat Mar 30 16:44:05 2013] <Josh> when is the 50th episode
+[Sat Mar 30 16:43:54 2013] <Test> ben: it's just a warning now, don't worry
+[Sat Mar 30 16:44:02 2013] <sam> arthur: But what would I run on the first? It's worth noting that unless I hoarde the money into my account first, I shouldn't trust the server much but then the server is associated with me..
+[Sat Mar 30 16:44:08 2013] <ben> can i like block it
+[Sat Mar 30 16:44:12 2013] <sam> arthur: so I have a hell of a fucking dilemma
+[Sat Mar 30 16:44:23 2013] <sam> james: yessssssss
+[Sat Mar 30 16:44:51 2013] <sam> well done bane
+[Sat Mar 30 16:44:51 2013] <arthur> sam powerful or money then
+[Sat Mar 30 16:45:44 2013] <arthur> Oh
+[Sat Mar 30 16:45:37 2013] <Test> ^
+[Sat Mar 30 16:45:37 2013] <james> sam kill your bot it's annoying.
+[Sat Mar 30 16:45:30 2013] <sam> arthur: I ran an MC server in my home on a single core machine for a while. It worked. The biggest issue with MC is everyone being an ass?
+[Sat Mar 30 16:45:26 2013] <ben> haha
+[Sat Mar 30 16:45:18 2013] <arthur> Haha
+[Sat Mar 30 16:45:17 2013] <james> It's also in 3D...
+[Sat Mar 30 16:45:11 2013] <Test> meh, ben, no more kicking for you too
+[Sat Mar 30 16:45:04 2013] <james> No air date
+[Sat Mar 30 16:44:56 2013] <sam> but i have no reason to have powerful arthur
+[Sat Mar 30 16:45:10 2013] <arthur> IRCx MC server..
+[Sat Mar 30 16:45:16 2013] <Test> ben: you can always try ;)
+[Sat Mar 30 16:45:17 2013] <james> :D
+[Sat Mar 30 16:45:24 2013] <james> SHUT UP YOU CUNT
+[Sat Mar 30 16:45:27 2013] <james> God.
+[Sat Mar 30 16:45:35 2013] <Josh> meh fuck 3d
+[Sat Mar 30 16:45:37 2013] <arthur> Spring IRCx MC server
+[Sat Mar 30 16:45:39 2013] <sam> james: not mine, test's
+[Sat Mar 30 16:45:48 2013] <james> It's in November.
+[Sat Mar 30 16:46:50 2013] <sam> pics
+[Sat Mar 30 16:46:40 2013] <sam> spam is the issue
+[Sat Mar 30 16:46:33 2013] <Test> No, it's OK
+[Sat Mar 30 16:46:22 2013] <james> Darn
+[Sat Mar 30 16:46:17 2013] <james> Lol
+[Sat Mar 30 16:46:15 2013] <james> Lol
+[Sat Mar 30 16:45:59 2013] <arthur> The latter or money sam
+[Sat Mar 30 16:45:56 2013] <james> Test kill your bot it's annoying
+[Sat Mar 30 16:45:58 2013] <Test> james: no your emotes are annoying
+[Sat Mar 30 16:46:11 2013] <sam> ok
+[Sat Mar 30 16:46:15 2013] <james> Lol
+[Sat Mar 30 16:46:17 2013] <sam> sounds like a plan
+[Sat Mar 30 16:46:26 2013] <james> Add "lol" to the blacklist
+[Sat Mar 30 16:46:39 2013] <sam> i do not care for emoticions much but i don't think we should ban them
+[Sat Mar 30 16:46:46 2013] <james> Holy fuck, the Doctor has a purple suit
+[Sat Mar 30 16:46:53 2013] <arthur> Mhm
+[Sat Mar 30 16:47:15 2013] <arthur> xD
+[Sat Mar 30 16:46:59 2013] <james> http://i3.mirror.co.uk/incoming/article1766415.ece/ALTERNATES/s615b/Doctor%20Who%20Series%207B%20final-1766415.jpg
+[Sat Mar 30 16:46:57 2013] <Test> sam: they're not banned, they're just discouraged
+[Sat Mar 30 16:47:08 2013] <arthur> CD :p :3 :)
+[Sat Mar 30 16:47:25 2013] <sam> what the hell is CD
+[Sat Mar 30 16:47:59 2013] <tupac> FUCK YOU NB POWER
+[Sat Mar 30 16:47:56 2013] <tupac> THATS GREAT
+[Sat Mar 30 16:48:01 2013] <Josh> is this matt smiths last series
+[Sat Mar 30 16:49:46 2013] <Test> sam: people just need to learn not to put an emote on a separate line
+[Sat Mar 30 16:49:46 2013] <Josh> even though this "series" is like halfway through the current series
+[Sat Mar 30 16:49:46 2013] <SERVER> chanserv!chanserv@services.int has set mode to v with args ('SS',) in #brows.
+[Sat Mar 30 16:49:46 2013] <SERVER> SS joined #brows.
+[Sat Mar 30 16:49:46 2013] <Josh> im definitely watching this series because i love the who
+[Sat Mar 30 16:49:46 2013] <sam> it's lies
+[Sat Mar 30 16:49:46 2013] <sam> no josh
+[Sat Mar 30 16:49:46 2013] <Josh> i havent watched ANY matt smith because i loved tennant too much but my parents say he's just as good if not better than tennant
+[Sat Mar 30 16:49:46 2013] <sam> dont do it
+[Sat Mar 30 16:49:46 2013] <sam> it's not true in the slightest
+[Sat Mar 30 16:49:46 2013] <SERVER> SS has quit (Ping timeout: 265 seconds).
+[Sat Mar 30 16:49:46 2013] <Josh> band and doctor
+[Sat Mar 30 16:49:46 2013] <Josh> but ill work it out
+[Sat Mar 30 16:49:54 2013] <arthur> No you may not remind me samantus
+[Sat Mar 30 16:50:32 2013] <Josh> it's part of life
+[Sat Mar 30 16:50:21 2013] <james> It'll be awesome anyway
+[Sat Mar 30 16:50:13 2013] <sam> josh: no dont
+[Sat Mar 30 16:50:00 2013] <arthur> XD
+[Sat Mar 30 16:49:58 2013] <arthur> Dat
+[Sat Mar 30 16:49:56 2013] <arthur> Auto correct
+[Sat Mar 30 16:49:56 2013] <arthur> wuss huddled nigga
+[Sat Mar 30 16:49:56 2013] <arthur> sam typo of xD
+[Sat Mar 30 16:49:55 2013] <Josh> :p
+[Sat Mar 30 16:49:56 2013] <arthur> ooh mah thug brotha tupac shakur
+[Sat Mar 30 16:49:56 2013] <arthur> What
+[Sat Mar 30 16:49:58 2013] <arthur> Dar lag
+[Sat Mar 30 16:49:59 2013] <arthur> Lol test
+[Sat Mar 30 16:50:08 2013] <arthur> x3
+[Sat Mar 30 16:50:16 2013] <sam> tennant or go home
+[Sat Mar 30 16:50:28 2013] <Josh> you have to be open to new things bryan sheep fucker
+[Sat Mar 30 16:50:41 2013] <arthur> Haha
+[Sat Mar 30 16:51:29 2013] <Josh> didnt even know facebook had ads
+[Sat Mar 30 16:51:10 2013] <james> Facebook want to double the size of their ads
+[Sat Mar 30 16:51:03 2013] <arthur> You added sheep fucker to the auto replace?
+[Sat Mar 30 16:51:24 2013] <Josh> mfw
+[Sat Mar 30 16:51:37 2013] <Josh> cant remember the last time i browsered without adblock
+[Sat Mar 30 16:52:42 2013] <reece> friends who like penis
+[Sat Mar 30 16:52:35 2013] <james> So
+[Sat Mar 30 16:52:31 2013] <james> There are "sponsored" likes.
+[Sat Mar 30 16:52:08 2013] <arthur> The Facebook app doesn't have ads
+[Sat Mar 30 16:52:34 2013] <james> But I never upgraded
+[Sat Mar 30 16:52:40 2013] <reece> I love graph search
+[Sat Mar 30 16:52:46 2013] <reece> epic win!
