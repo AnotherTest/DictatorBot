@@ -1,7 +1,7 @@
 from twisted.internet import reactor, protocol
 from twisted.words.protocols import irc
 from twisted.python import log
-import Utils, Command, time
+import Utils, Command, time, threading
 
 def isEmote(msg):
     """Checks whether msg is a single emote."""
@@ -41,19 +41,22 @@ def detectSpam(user, logs):
     msg = getLast3Messages(user, logs)
     if len(msg) < 3:
         return False
-    if (msg[0][2] == msg[1][2] == msg[2][2]) or (msg[2][0] - msg[0][0] < 3):
-        return True
+#if (msg[0][2] == msg[1][2] == msg[2][2]) or (msg[2][0] - msg[0][0] < 2):
+#        return True
     return len([x for x in msg if x[2] == x[2].upper()]) == len(msg)
 
 class IRCBot(irc.IRCClient):
     _users = dict() # maps names to warning levels
     _threshold = 3
     _interpreter = None
+    _flush_interval = 60
+    _log_timer = None
     _logs = [] # stores previous messages as (time, user, msg)
     
     def __init__(self):
         self._interpreter = Command.Interpreter("functions.p")
-
+        self._startLogTimer()
+        
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
 
@@ -75,13 +78,33 @@ class IRCBot(irc.IRCClient):
         self._users[user] += 1
         self.msg(user, "May I remind you, " + user + ", that " + warning 
                  + " is not appreciated.")
-        if self._users[user] >= self._threshold:
-            self.kickUser(user, "User received at least " + str(self._threshold)
-                          + " warning(s).")
     
+    def logMessage(self, user, msg):
+        self._logs.append((time.time(), user, msg))
+
+    def _writeLogMessages(self):
+        lines = ["[" + time.ctime(m[0]) + "] <" + m[1]
+                 + "> " + m[2] + "\n" for m in self._logs]
+        lines.reverse()
+        logfile = self.factory.channel[1:] + ".log"
+        with open(logfile, "a+") as f:
+            f.writelines(lines)
+        self._logs = []
+
+    def _startLogTimer(self):
+        self._log_timer = threading.Timer(
+            self._flush_interval, self._flushLog
+        )
+        self._log_timer.start()
+
+    def _flushLog(self):
+        if len(self._logs) > 0:
+            self._writeLogMessages()
+        self._startLogTimer()
+
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
-        self._logs.append((time.time(), user, msg))
+        self.logMessage(user, msg)
         if msg[0] == "`":
             self.runCommand(user, msg[1:])
         result = checkMessage(user, msg)
@@ -89,6 +112,28 @@ class IRCBot(irc.IRCClient):
             self.warnUser(user, result[1])
         if detectSpam(user, self._logs):
             self.kickUser(user, "Quit spamming.")
+
+    def topicUpdated(self, user, channel, topic):
+        self.logMessage("SERVER", user + " has changed the topic of "
+                        + channel + " to: " + topic)
+
+    def userKicked(user, kickee, channel, kicker, message):
+        self.logMessage("SERVER", kicker + " has kicked " + kickee
+                        + "from " + channel  + ". Reason: " + message)
+
+    def userLeft(self, user, channel):
+        self.logMessage("SERVER", user + " has left " + channel + ".")
+
+    def userQuit(self, user, msg):
+        self.logMessage("SERVER", user + " has quit (" + msg + ").")
+    
+    def userJoined(self, user, channel):
+        self.logMessage("SERVER", user + " joined " + channel + ".")
+
+    def modeChanged(self, user, channel, add, modes, args):
+        self.logMessage("SERVER", user + " has set mode to " + modes
+                        + " with args " + str(args) + " in " + channel
+                        + ".")
 
     def runCommand(self, user, msg):
         try:
@@ -108,6 +153,7 @@ class IRCBot(irc.IRCClient):
         if oldname in self._users:
             self._users[newname] = self._users[oldname]
             del self._users[oldname]
+        self.logMessage("SERVER", oldname + " is now known as " + newname)
     
     def kickedFrom(self, channel, kicker, message):
         self.join(self.factory.channel)
