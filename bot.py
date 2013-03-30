@@ -108,6 +108,9 @@ class IRCBot(irc.IRCClient):
         if oldname in self._users:
             self._users[newname] = self._users[oldname]
             del self._users[oldname]
+    
+    def kickedFrom(self, channel, kicker, message):
+        self.join(self.factory.channel)
 
 class IRCFactory(protocol.ClientFactory):
     protocol = IRCBot
