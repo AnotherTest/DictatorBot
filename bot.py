@@ -146,7 +146,9 @@ class IRCBot(irc.IRCClient):
             print tokens
             for s in self._interpreter.interpret(tokens):
                 if s != None:
-                    self.msg(self.factory.channel, s)
+                    self.msg(self.factory.channel, " " + s.replace(
+                             "\n", "\\"
+                    ))
         except:
             self.msg(self.factory.channel, ("Oops, seems like something "
                     "went wrong..."))
