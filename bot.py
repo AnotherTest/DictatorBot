@@ -41,8 +41,8 @@ def detectSpam(user, logs):
     msg = getLast3Messages(user, logs)
     if len(msg) < 3:
         return False
-#if (msg[0][2] == msg[1][2] == msg[2][2]) or (msg[2][0] - msg[0][0] < 2):
-#        return True
+    if (msg[0][2] == msg[1][2] == msg[2][2]):
+        return True
     return len([x for x in msg if x[2] == x[2].upper()]) == len(msg)
 
 class IRCBot(irc.IRCClient):
@@ -120,7 +120,7 @@ class IRCBot(irc.IRCClient):
         self.logMessage("SERVER", user + " has changed the topic of "
                         + channel + " to: " + topic)
 
-    def userKicked(user, kickee, channel, kicker, message):
+    def userKicked(self, user, kickee, channel, kicker, message):
         self.logMessage("SERVER", kicker + " has kicked " + kickee
                         + "from " + channel  + ". Reason: " + message)
 
@@ -146,7 +146,7 @@ class IRCBot(irc.IRCClient):
             print tokens
             for s in self._interpreter.interpret(tokens):
                 if s != None:
-                    self.msg(self.factory.channel, " " + s.replace(
+                    self.msg(self.factory.channel, "> " + s.replace(
                              "\n", "\\"
                     ))
         except:
