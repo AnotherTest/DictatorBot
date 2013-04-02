@@ -1,7 +1,7 @@
 from twisted.internet import reactor, protocol
 from twisted.words.protocols import irc
 from twisted.python import log
-import Utils, Command, time, threading
+import Utils, Command, MarkovAi, time, threading
 
 def isEmote(msg):
     """Checks whether msg is a single emote."""
@@ -49,14 +49,15 @@ class IRCBot(irc.IRCClient):
     _users = dict() # maps names to warning levels
     _threshold = 3
     _interpreter = None
-    _flush_interval = 60
-    _log_timer = None
+    _flush_interval = 300
+    _timer = None
     _logs = [] # stores previous messages as (time, user, msg)
-    
+    _ai = MarkovAi.AiBrain("brain.p")
+
     def __init__(self):
         self._interpreter = Command.Interpreter("functions.p")
-        self._startLogTimer()
-        
+        self._startTimer()
+            
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
 
@@ -94,27 +95,44 @@ class IRCBot(irc.IRCClient):
             f.writelines(lines)
         self._logs = []
 
-    def _startLogTimer(self):
-        self._log_timer = threading.Timer(
-            self._flush_interval, self._flushLog
+    def _startTimer(self):
+        self._timer = threading.Timer(
+            self._flush_interval, self._flush
         )
-        self._log_timer.start()
+        self._timer.start()
 
-    def _flushLog(self):
+    def _flush(self):
         if len(self._logs) > 0:
             self._writeLogMessages()
-        self._startLogTimer()
+        self._ai.save()
+        self._startTimer()
 
-    def privmsg(self, user, channel, msg):
-        user = user.split('!', 1)[0]
-        self.logMessage(user, msg)
-        if msg[0] == "`":
-            self.runCommand(user, msg[1:])
+    def _aiRespond(self, user, channel, msg):
+        response = self._ai.respond(msg)
+        self.msg(channel, "%s: %s" % (user, response))
+   
+    def _isHuman(self, user):
+        return user and not (user in ["nickserv", "chanserv", "memoserv"])
+
+    def _handleHumanMsg(self, user, channel, msg):
+        self._ai.learn(msg)
+        if self.nickname in msg:
+            self._aiRespond(user, channel, msg)
         result = checkMessage(user, msg)
         if result[0] == False:
             self.warnUser(user, result[1])
         if detectSpam(user, self._logs):
             self.kickUser(user, "Quit spamming.")
+        if msg[0] == "`":
+            self.runCommand(user, channel, msg[1:])
+
+    def privmsg(self, user, channel, msg):
+        user = user.split('!', 1)[0]
+        if channel[0] != "#":
+            channel = user
+        self.logMessage(user, msg)
+        if self._isHuman(user):
+            self._handleHumanMsg(user, channel, msg)
 
     def topicUpdated(self, user, channel, topic):
         self.logMessage("SERVER", user + " has changed the topic of "
@@ -138,7 +156,7 @@ class IRCBot(irc.IRCClient):
                         + " with args " + str(args) + " in " + channel
                         + ".")
 
-    def runCommand(self, user, msg):
+    def runCommand(self, user, channel, msg):
         try:
             tokens = []
             parser = Command.getEbnfParser(tokens)
@@ -146,12 +164,9 @@ class IRCBot(irc.IRCClient):
             print tokens
             for s in self._interpreter.interpret(tokens):
                 if s != None:
-                    self.msg(self.factory.channel, "> " + s.replace(
-                             "\n", "\\"
-                    ))
+                    self.msg(channel, "> " + s.replace("\n", "\\"))
         except:
-            self.msg(self.factory.channel, ("Oops, seems like something "
-                    "went wrong..."))
+            self.msg(user, "Oops, seems like something went wrong...")
             raise           
 
     def userRenamed(self, oldname, newname):
@@ -182,6 +197,6 @@ class IRCFactory(protocol.ClientFactory):
 
 
 host, port = "localhost", 6667
-fact = IRCFactory("samantus", "", "#brows")
+fact = IRCFactory("samantus", "", "#test")
 reactor.connectTCP(host, port, fact)
 reactor.run()
