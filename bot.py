@@ -135,7 +135,6 @@ class IRCBot(irc.IRCClient):
             channel = user
         self.logMessage(user, msg)
         if self._isHuman(user):
-            print full_user
             access = self._access_list.hasAccess(full_user)
             self._handleHumanMsg(user, access, channel, msg)
 
