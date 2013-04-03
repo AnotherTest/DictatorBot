@@ -52,7 +52,7 @@ class IRCBot(irc.IRCClient):
     _flush_interval = 300
     _timer = None
     _logs = [] # stores previous messages as (time, user, msg)
-    _ai = MarkovAi.AiBrain("brain.p")
+    _ai = MarkovAi.AiBrain("brain.p", .1) # Chat rate of 10%
 
     def __init__(self):
         self._interpreter = Command.Interpreter("functions.p")
@@ -108,8 +108,9 @@ class IRCBot(irc.IRCClient):
         self._startTimer()
 
     def _aiRespond(self, user, channel, msg):
-        response = self._ai.respond(msg)
-        self.msg(channel, "%s: %s" % (user, response))
+        if self._ai.isChatty():
+            response = self._ai.respond(msg)
+            self.msg(channel, "%s: %s" % (user, response))
    
     def _isHuman(self, user):
         return user and not (user in ["nickserv", "chanserv", "memoserv"])
