@@ -6,11 +6,11 @@ class AiBrain:
     _length = 2
     _eos = "\n"
     _filename = ""
-    _chat_rate = 0    
+    chat_rate = 0    
 
     def __init__(self, fname, rate):
         self._filename = fname
-        self._chat_rate = rate
+        self.chat_rate = rate
         
         if not os.path.isfile(self._filename):
             self.save()
@@ -44,7 +44,7 @@ class AiBrain:
 
     def isChatty(self):
         """ Returns whether the AI bot feels like talking. """
-        return random.random() <= self._chat_rate
+        return random.random() <= self.chat_rate
 
     def respond(self, msg, max_length = 10000):
         """ Responds to a given msg. """

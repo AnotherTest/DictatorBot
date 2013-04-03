@@ -1,7 +1,7 @@
 from twisted.internet import reactor, protocol
 from twisted.words.protocols import irc
 from twisted.python import log
-import Utils, Command, MarkovAi, time, threading
+import Utils, AccessList, Command, MarkovAi, time, threading
 
 def isEmote(msg):
     """Checks whether msg is a single emote."""
@@ -47,12 +47,12 @@ def detectSpam(user, logs):
 
 class IRCBot(irc.IRCClient):
     _users = dict() # maps names to warning levels
-    _threshold = 3
     _interpreter = None
     _flush_interval = 300
     _timer = None
     _logs = [] # stores previous messages as (time, user, msg)
     _ai = MarkovAi.AiBrain("brain.p", .1) # Chat rate of 10%
+    _access_list = AccessList.AccessList("access.list")
 
     def __init__(self):
         self._interpreter = Command.Interpreter("functions.p")
@@ -115,7 +115,7 @@ class IRCBot(irc.IRCClient):
     def _isHuman(self, user):
         return user and not (user in ["nickserv", "chanserv", "memoserv"])
 
-    def _handleHumanMsg(self, user, channel, msg):
+    def _handleHumanMsg(self, user, access, channel, msg):
         self._ai.learn(msg)
         if self.nickname in msg:
             self._aiRespond(user, channel, msg)
@@ -126,14 +126,18 @@ class IRCBot(irc.IRCClient):
             self.kickUser(user, "Quit spamming.")
         if msg[0] == "`":
             self.runCommand(user, channel, msg[1:])
+        elif msg[0] == "?" and access:
+            self.runConfigCommand(user, channel, msg[1:])
 
-    def privmsg(self, user, channel, msg):
-        user = user.split('!', 1)[0]
+    def privmsg(self, full_user, channel, msg):
+        user = full_user.split('!', 1)[0]
         if channel[0] != "#":
             channel = user
         self.logMessage(user, msg)
         if self._isHuman(user):
-            self._handleHumanMsg(user, channel, msg)
+            print full_user
+            access = self._access_list.hasAccess(full_user)
+            self._handleHumanMsg(user, access, channel, msg)
 
     def topicUpdated(self, user, channel, topic):
         self.logMessage("SERVER", user + " has changed the topic of "
@@ -169,6 +173,24 @@ class IRCBot(irc.IRCClient):
         except:
             self.msg(user, "Oops, seems like something went wrong...")
             raise           
+
+    def runConfigCommand(self, user, channel, msg):
+        try:
+            data = msg.split(":")
+            cmd, args = data[0], data[1].split(",")
+            if cmd == "chatrate":
+                self._ai.chat_rate = float(args[0])
+            elif cmd == "delfn":
+                self._interpreter.loadUserFunctions()
+                del self._interpreter.user_function_table[args[0].strip()]
+                self._interpreter.saveUserFunctions() 
+            elif cmd == "accessadd":
+                self._access_list.add(args[0].strip())
+            elif cmd == "accessdel":
+                self._access_list.remove(args[0].strip())
+        except:
+            self.msg(user, "Oops, seems like something went wrong...")
+            raise
 
     def userRenamed(self, oldname, newname):
         if oldname in self._users:
