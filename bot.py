@@ -51,22 +51,25 @@ class IRCBot(irc.IRCClient):
     _flush_interval = 300
     _timer = None
     _logs = [] # stores previous messages as (time, user, msg)
-    _ai = MarkovAi.AiBrain("brain.p", .1) # Chat rate of 10%
+    _ai = None
     _access_list = AccessList.AccessList("access.list")
 
     def __init__(self):
         self._interpreter = Command.Interpreter("functions.p")
         self._startTimer()
-            
+        # Initialize the Markov-chain AI "brain" with chattyness of 10%
+        self._ai = MarkovAi.AiBrain("brain.p", .1, self.nickname)
+
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
 
     def signedOn(self):
-        print 'Connection established.'
+        print "Connection established."
         self.join(self.factory.channel)
-        print 'Joined channel', self.factory.channel
+        print "Joined channel", self.factory.channel
     
     def kickUser(self, user, reason):
+        """ Kicks a user from the channel. """
         #self.msg("chanserv", "kick " + self.factory.channel + " " + user
         #         + " " + reason)
         self.kick(self.factory.channel, user, reason)
@@ -74,6 +77,10 @@ class IRCBot(irc.IRCClient):
             del self._users[user]
 
     def warnUser(self, user, warning):
+        """
+        Warns a user by sending a message and increasing the warning count
+        for this user.
+        """
         if not (user in self._users):
             self._users[user] = 0
         self._users[user] += 1
@@ -81,41 +88,50 @@ class IRCBot(irc.IRCClient):
                  + " is not appreciated.")
     
     def logMessage(self, user, msg):
+        """ Appends a message to the (temporary) log. """
         self._logs.append((time.time(), user, msg))
 
     def sortLog(self):
+        """ Sorts messages in the log based on receive time. """
         self._logs.sort(lambda m1, m2: Utils.compare(m1[0], m2[0]))
 
     def _writeLogMessages(self):
+        """ Writes the temporary log to the filesystem and clears it. """
         self.sortLog()
         lines = ["[" + time.ctime(m[0]) + "] <" + m[1]
                  + "> " + m[2] + "\n" for m in self._logs]
         logfile = self.factory.channel[1:] + ".log"
         with open(logfile, "a+") as f:
             f.writelines(lines)
-        self._logs = []
+        del self._logs[:]
 
     def _startTimer(self):
+        """ Starts the flush timer. """
         self._timer = threading.Timer(
             self._flush_interval, self._flush
         )
         self._timer.start()
 
     def _flush(self):
+        """ Flushes all temporary data such as logs and the ai brain. """
         if len(self._logs) > 0:
             self._writeLogMessages()
         self._ai.save()
         self._startTimer()
 
     def _aiRespond(self, user, channel, msg):
+        """ (Possibly) makes the AI reposnd to a received message. """
         if self._ai.isChatty():
             response = self._ai.respond(msg)
             self.msg(channel, "%s: %s" % (user, response))
    
     def _isHuman(self, user):
-        return user and not (user in ["nickserv", "chanserv", "memoserv"])
+        """ Filters out a number of known bots. """
+        return user and not (user.lower() in ["nickserv", "chanserv",
+            "memoserv", "hostserv"])
 
     def _handleHumanMsg(self, user, access, channel, msg):
+        """ Handles all messages that come from a human. """
         self._ai.learn(msg)
         if self.nickname in msg:
             self._aiRespond(user, channel, msg)
@@ -130,6 +146,7 @@ class IRCBot(irc.IRCClient):
             self.runConfigCommand(user, channel, msg[1:])
 
     def privmsg(self, full_user, channel, msg):
+        """ Handles all received messages. """
         user = full_user.split('!', 1)[0]
         if channel[0] != "#":
             channel = user
@@ -143,24 +160,28 @@ class IRCBot(irc.IRCClient):
                         + channel + " to: " + topic)
 
     def userKicked(self, user, kickee, channel, kicker, message):
-        self.logMessage("SERVER", kicker + " has kicked " + kickee
-                        + "from " + channel  + ". Reason: " + message)
+        self.logMessage("SERVER",
+            " %s has kicked %s from %s. Reason: %s" % (kicker, kickee, 
+            channel, message)
+        )
 
     def userLeft(self, user, channel):
-        self.logMessage("SERVER", user + " has left " + channel + ".")
+        self.logMessage("SERVER", "%s has left %s." % (user, channel))
 
     def userQuit(self, user, msg):
-        self.logMessage("SERVER", user + " has quit (" + msg + ").")
+        self.logMessage("SERVER", "%s has quit (%s)." % (user, msg))
     
     def userJoined(self, user, channel):
-        self.logMessage("SERVER", user + " joined " + channel + ".")
+        self.logMessage("SERVER", "%s has joined %s." % (user, channel))
 
     def modeChanged(self, user, channel, add, modes, args):
-        self.logMessage("SERVER", user + " has set mode to " + modes
-                        + " with args " + str(args) + " in " + channel
-                        + ".")
+        self.logMessage("SERVER",
+            "%s has set mode(s) to %s with args %s in %s." % (user, modes,
+             str(args), channel)
+        )
 
     def runCommand(self, user, channel, msg):
+        """ Runs a command. """
         try:
             tokens = []
             parser = Command.getEbnfParser(tokens)
@@ -174,6 +195,7 @@ class IRCBot(irc.IRCClient):
             raise           
 
     def runConfigCommand(self, user, channel, msg):
+        """ Runs a command to modify the configuration at run-time. """
         try:
             data = msg.split(":")
             cmd, args = data[0], data[1].split(",")
@@ -195,8 +217,10 @@ class IRCBot(irc.IRCClient):
         if oldname in self._users:
             self._users[newname] = self._users[oldname]
             del self._users[oldname]
-        self.logMessage("SERVER", oldname + " is now known as " + newname)
-    
+        self.logMessage("SERVER",
+            "%s is now known as %s." % (oldname, newname)
+        )
+
     def kickedFrom(self, channel, kicker, message):
         self.join(self.factory.channel)
 

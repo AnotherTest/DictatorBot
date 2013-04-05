@@ -8,6 +8,7 @@ import os.path
 TokenType = enum("StrLit", "NumLit", "Var", "Call", "Def", "End")
 
 def getEbnfParser(symbols):
+    """ Returns an EBNF parser for the command language. """
     identifier = Word(alphas + '_', alphanums + '_')
     string = quotedString.setParseAction(
         lambda t: symbols.append((t[0][1:-1], TokenType.StrLit))
@@ -39,6 +40,7 @@ def getEbnfParser(symbols):
     return msg
 
 def isLiteral(tk):
+    """ Checks whether a given token is a literal. """
     t = tk[1]
     return t == TokenType.StrLit or t == TokenType.NumLit
 
@@ -70,14 +72,18 @@ class Interpreter:
             self.saveUserFunctions()
 
     def fnGetArgc(self, name):
-        """Gets the amount of arguments a function given by its name takes."""
+        """
+        Gets the amount of arguments a function given by its name takes.
+        """
         if name in self.function_table:
             return len(inspect.getargspec(self.function_table[name]).args)
         else:
             return len(self.user_function_table[name][0])
 
     def getArgTuple(self, arg):
-        """Gets the tuple (value, TokenType) associated with a given argument."""
+        """
+        Gets the tuple (value, TokenType) associated with a given argument.
+        """
         if type(arg) == types.StringType:
             return (arg, TokenType.StrLit)
         else:
@@ -112,6 +118,7 @@ class Interpreter:
         self.user_function_table[name] = (args, code)
 
     def interpretStatement(self):
+        """ Interprets a single statement. """
         head = self._tokens.pop(0)
         if isLiteral(head):
             return head[0]
@@ -124,14 +131,17 @@ class Interpreter:
         return self.fnCall(head[0], args)
 
     def saveUserFunctions(self):
+        """ Saves the list of user-defined functions using pickle. """
         with open(self._filename, "wb") as f:
             pickle.dump(self.user_function_table, f)
 
     def loadUserFunctions(self):
+        """ Loads the list of user-defined functions using pickle. """
         with open(self._filename, "rb") as f:
             self.user_function_table = pickle.load(f)
 
     def interpret(self, tokens):
+        """ Interprets a (multi-line) program. """
         self.loadUserFunctions()
         last, end_token = 0, (";", TokenType.End)
         find_end = lambda: find(end_token, tokens[last:]) + last + 1

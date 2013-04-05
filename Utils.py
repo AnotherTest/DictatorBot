@@ -25,6 +25,12 @@ def find(value, l):
 def httpGet(url):
     return urllib2.urlopen(url).read()
 
+def stripAll(s, replacements):
+    """ Strips multiple strings at once from a given string. """    
+    for value in replacements:
+        s = s.replace(value, "")    
+    return s
+
 def compare(x, y):
     if x < y:
         return -1
