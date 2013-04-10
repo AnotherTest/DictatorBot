@@ -1,5 +1,5 @@
 from collections import defaultdict
-import random, pickle, os, Utils
+import random, pickle, os, Utils, string
 
 class AiBrain:
     _chain = defaultdict(list)
@@ -25,9 +25,9 @@ class AiBrain:
 
     def _cleanValue(self, val):
         """ Cleans up a given word: removes punctuation and lowercases. """
-        return Utils.stripAll(val,
+        return filter(lambda x: x in string.printable, Utils.stripAll(val,
              [".", ",", "?", ";", "!", "(", ")", '"', "'"]
-        ).lower()
+        ).lower())
     
     def learn(self, msg):
         """ Parses msg and adds it to the Markov chain. """
