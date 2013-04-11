@@ -52,18 +52,32 @@ class IRCBot(irc.IRCClient):
     _timer = None
     _logs = [] # stores previous messages as (time, user, msg)
     _ai = None
-    _access_list = AccessList.AccessList("access.list")
+    _access_list = None
+    _use_late_login = False
 
     def __init__(self):
-        self._interpreter = Command.Interpreter("functions.p")
+        cfg = self.config
+        self._access_list = AccessList.AccessList(
+            cfg.get("Bot", "accesslist"), cfg.get("Bot", "owner")
+        )
+        self._interpreter = Command.Interpreter(
+            cfg.get("Bot", "functionsfile")
+        )
+        self._ai = MarkovAi.AiBrain(
+            cfg.get("Bot", "brainfile"), 
+            cfg.getfloat("Bot", "chatrate"), self.nickname
+        )
+        self._use_late_login = cfg.getboolean("Bot", "latelogin")
         self._startTimer()
-        # Initialize the Markov-chain AI "brain" with chattyness of 10%
-        self._ai = MarkovAi.AiBrain("brain.p", .1, self.nickname)
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
 
     def signedOn(self):
+        if self._use_late_login:
+            self.msg("nickserv", "identify " + self.nickname + " "\
+                     + self.password)
+
         print "Connection established."
         self.join(self.factory.channel)
         print "Joined channel", self.factory.channel
@@ -225,13 +239,14 @@ class IRCBot(irc.IRCClient):
         self.join(self.factory.channel)
 
 class IRCFactory(protocol.ClientFactory):
-    protocol = IRCBot
+    protocol = IRCBot 
     channel = ""
 
-    def __init__(self, nick, password, channel):
-        self.protocol.nickname = nick
-        self.protocol.password = password
-        self.channel = channel
+    def __init__(self, config):
+        self.protocol.config = config
+        self.protocol.nickname = config.get("Bot", "nickname")
+        self.protocol.password = config.get("Bot", "password")
+        self.channel = "#" + config.get("IRC", "channel")
 
     def clientConnectionFailed(self, connector, reason):
         print "Connection failed: %s" % reason
@@ -241,8 +256,8 @@ class IRCFactory(protocol.ClientFactory):
         print "Connection lost: %s" % reason
         connector.connect()
 
-
-host, port = "localhost", 6667
-fact = IRCFactory("samantus", "", "#test")
-reactor.connectTCP(host, port, fact)
+config = Utils.readConfig("dictatorbot.cfg")
+host, port = config.get("IRC", "server"), config.getint("IRC", "port")
+factory = IRCFactory(config)
+reactor.connectTCP(host, port, factory)
 reactor.run()

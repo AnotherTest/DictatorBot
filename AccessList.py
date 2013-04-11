@@ -4,10 +4,10 @@ class AccessList:
     _filename = None
     _list = []
 
-    def __init__(self, fname):
+    def __init__(self, fname, owner):
         self._filename = fname
         if not os.path.isfile(self._filename):
-            open(self._filename, "w+").write("Test!~Test@m-main.gh\n")
+            open(self._filename, "w+").write(owner + "\n")
         self._load()
     
     def _load(self):

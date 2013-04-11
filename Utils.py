@@ -1,4 +1,4 @@
-import urllib2
+import urllib2, ConfigParser
 
 def doCaps(str1, str2): # pretty ugly, please cleanup
     """Makes str1 be capitalized exactly like str2."""
@@ -23,6 +23,8 @@ def find(value, l):
         return None
 
 def httpGet(url):
+    if url[:7] != "http://":
+        url = "http://" +  url
     return urllib2.urlopen(url).read()
 
 def stripAll(s, replacements):
@@ -38,3 +40,8 @@ def compare(x, y):
         return 1
     else:
         return 0
+
+def readConfig(filename):
+    config = ConfigParser.RawConfigParser()
+    config.read(filename)
+    return config
