@@ -59,15 +59,14 @@ class Interpreter:
         "grepi"  : lambda ex, s, i: re.search(ex, s).groups()[i],
         "get"    : lambda url: httpGet(url)
     }
-    user_function_table = {}
-    _tokens = [] # Current list of tokens
-    _filename = ""
 
     def __init__(self, filename):
         """
         Constructor, just creates a functions file if it doesn't exist.
         """
         self._filename = filename
+        self.user_function_table = {}
+        self._tokens = []
         if not os.path.isfile(filename):
             self.saveUserFunctions()
 

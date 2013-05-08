@@ -46,16 +46,8 @@ def detectSpam(user, logs):
     return len([x for x in msg if x[2] == x[2].upper()]) == len(msg)
 
 class IRCBot(irc.IRCClient):
-    _users = dict() # maps names to warning levels
-    _interpreter = None
-    _flush_interval = 300
-    _timer = None
-    _logs = [] # stores previous messages as (time, user, msg)
-    _ai = None
-    _access_list = None
-    _use_late_login = False
-
     def __init__(self):
+        self._users = dict() # maps names to warning levels
         cfg = self.config
         self._access_list = AccessList.AccessList(
             cfg.get("Bot", "accesslist"), cfg.get("Bot", "owner")
@@ -68,6 +60,8 @@ class IRCBot(irc.IRCClient):
             cfg.getfloat("Bot", "chatrate"), self.nickname
         )
         self._use_late_login = cfg.getboolean("Bot", "latelogin")
+        self._flush_interval = 300
+        self._logs = []
         self._startTimer()
 
     def connectionMade(self):
@@ -239,9 +233,6 @@ class IRCBot(irc.IRCClient):
         self.join(self.factory.channel)
 
 class IRCFactory(protocol.ClientFactory):
-    protocol = IRCBot 
-    channel = ""
-
     def __init__(self, config):
         self.protocol.config = config
         self.protocol.nickname = config.get("Bot", "nickname")

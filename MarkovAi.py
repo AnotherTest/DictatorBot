@@ -2,14 +2,10 @@ from collections import defaultdict
 import random, pickle, os, Utils, string
 
 class AiBrain:
-    _chain = defaultdict(list)
-    _length = 2
-    _eos = "\n"
-    _filename = ""
-    _nickname = ""
-    chat_rate = 0    
-
     def __init__(self, fname, nick, rate):
+        self._chain = defaultdict(list)
+        self._length = 2
+        self._eos = "\n"
         self._filename = fname
         self._nickname = nick
         self.chat_rate = rate
