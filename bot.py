@@ -46,9 +46,8 @@ def detectSpam(user, logs):
     return len([x for x in msg if x[2] == x[2].upper()]) == len(msg)
 
 class IRCBot(irc.IRCClient):
-    def __init__(self):
+    def __init__(self, cfg):
         self._users = dict() # maps names to warning levels
-        cfg = self.config
         self._access_list = AccessList.AccessList(
             cfg.get("Bot", "accesslist"), cfg.get("Bot", "owner")
         )
@@ -234,10 +233,17 @@ class IRCBot(irc.IRCClient):
 
 class IRCFactory(protocol.ClientFactory):
     def __init__(self, config):
-        self.protocol.config = config
-        self.protocol.nickname = config.get("Bot", "nickname")
-        self.protocol.password = config.get("Bot", "password")
+        self.config = config
+        self.nickname = config.get("Bot", "nickname")
+        self.password = config.get("Bot", "password")
         self.channel = "#" + config.get("IRC", "channel")
+
+    def buildProtocol(self, addr):
+        bot = IRCBot(config)
+        bot.factory = self
+        bot.nickname = self.nickname
+        bot.password = self.password
+        return bot 
 
     def clientConnectionFailed(self, connector, reason):
         print "Connection failed: %s" % reason
